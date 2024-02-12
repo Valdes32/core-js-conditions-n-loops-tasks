@@ -295,8 +295,16 @@ function getIndexOf(str, letter) {
  *  12345, 0    => false
  *  12345, 6    => false
  */
-function isContainNumber(/* num, digit */) {
-  throw new Error('Not implemented');
+function isContainNumber(num, digit) {
+  let newNum = num;
+  while (newNum > 0) {
+    const lastDigit = newNum % 10;
+    if (lastDigit === digit) {
+      return true;
+    }
+    newNum = Math.floor(newNum / 10);
+  }
+  return false;
 }
 
 /**
@@ -312,8 +320,20 @@ function isContainNumber(/* num, digit */) {
  *  [2, 3, 9, 5] => 2       => 2 + 3 === 5 then balance element is 9 and its index = 2
  *  [1, 2, 3, 4, 5] => -1   => no balance element
  */
-function getBalanceIndex(/* arr */) {
-  throw new Error('Not implemented');
+function getBalanceIndex(arr) {
+  let totalSum = 0;
+  for (let i = 0; i < arr.length; i += 1) {
+    totalSum += arr[i];
+  }
+  let leftSum = 0;
+  for (let i = 0; i < arr.length; i += 1) {
+    const rightSum = totalSum - leftSum - arr[i];
+    if (leftSum === rightSum) {
+      return i;
+    }
+    leftSum += arr[i];
+  }
+  return -1;
 }
 
 /**
@@ -337,10 +357,42 @@ function getBalanceIndex(/* arr */) {
  *          [10, 9,  8,  7]
  *        ]
  */
-function getSpiralMatrix(/* size */) {
-  throw new Error('Not implemented');
+function getSpiralMatrix(size) {
+  const result = [];
+  for (let i = 0; i < size; i += 1) {
+    result[i] = [];
+  }
+  let numbers = 1;
+  let colIndex = size;
+  let rowIndex = 0;
+  while (numbers <= size * size) {
+    for (let i = 0 + rowIndex; i < colIndex; i += 1) {
+      result[0 + rowIndex][i] = numbers;
+      numbers += 1;
+    }
+    if (numbers >= size * size) {
+      break;
+    }
+    for (let i = 1 + rowIndex; i < colIndex; i += 1) {
+      result[i][colIndex - 1] = numbers;
+      numbers += 1;
+    }
+    for (let i = 1 + rowIndex; i < colIndex; i += 1) {
+      result[colIndex - 1][colIndex - 1 - i + rowIndex] = numbers;
+      numbers += 1;
+    }
+    if (numbers >= size * size) {
+      break;
+    }
+    for (let i = 1 + rowIndex; i < colIndex - 1; i += 1) {
+      result[colIndex - 1 - i + rowIndex][rowIndex] = numbers;
+      numbers += 1;
+    }
+    colIndex -= 1;
+    rowIndex += 1;
+  }
+  return result;
 }
-
 /**
  * Rotates a matrix by 90 degrees clockwise in place.
  * Take into account that the matrix size can be very large. Consider how you can optimize your solution.
@@ -356,8 +408,22 @@ function getSpiralMatrix(/* size */) {
  *    [7, 8, 9]         [9, 6, 3]
  *  ]                 ]
  */
-function rotateMatrix(/* matrix */) {
-  throw new Error('Not implemented');
+function rotateMatrix(matrix) {
+  const NewMatrix = matrix;
+  const n = NewMatrix.length;
+  for (let layer = 0; layer < Math.floor(n / 2); layer += 1) {
+    const first = layer;
+    const last = n - 1 - layer;
+    for (let i = first; i < last; i += 1) {
+      const offset = i - first;
+      const top = matrix[first][i];
+      NewMatrix[first][i] = NewMatrix[last - offset][first];
+      NewMatrix[last - offset][first] = NewMatrix[last][last - offset];
+      NewMatrix[last][last - offset] = NewMatrix[i][last];
+      NewMatrix[i][last] = top;
+    }
+  }
+  return NewMatrix;
 }
 
 /**
@@ -374,8 +440,24 @@ function rotateMatrix(/* matrix */) {
  *  [2, 9, 5, 9]    => [2, 5, 9, 9]
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
-function sortByAsc(/* arr */) {
-  throw new Error('Not implemented');
+function sortByAsc(arr) {
+  if (arr.length < 2) return arr;
+  const elem = arr[0];
+  const leftPart = [];
+  const rightPart = [];
+  for (let i = 1; i < arr.length; i += 1) {
+    if (arr[i] > elem) {
+      rightPart[rightPart.length] = arr[i];
+    } else {
+      leftPart[leftPart.length] = arr[i];
+    }
+  }
+  const resultArr = [...sortByAsc(leftPart), elem, ...sortByAsc(rightPart)];
+  const copyArr = arr;
+  for (let i = 0; i < resultArr.length; i += 1) {
+    copyArr[i] = resultArr[i];
+  }
+  return copyArr;
 }
 
 /**
@@ -395,8 +477,33 @@ function sortByAsc(/* arr */) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  let result = str;
+  let count = 1;
+  const resultArr = [];
+  resultArr[count - 1] = result;
+
+  while (count <= iterations) {
+    let strEven = '';
+    let strOdd = '';
+
+    for (let i = 0; i < result.length; i += 1) {
+      if (i % 2 === 0) {
+        strEven += result[i];
+      } else {
+        strOdd += result[i];
+      }
+    }
+
+    result = strEven + strOdd;
+    resultArr[count] = result;
+
+    if (result === str) break;
+
+    count += 1;
+  }
+
+  return resultArr[iterations % count];
 }
 
 /**
@@ -416,8 +523,45 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const numArr = [];
+  const numberStr = `${number}`;
+
+  for (let i = 0; i < numberStr.length; i += 1) {
+    numArr.push(+numberStr[i]);
+  }
+
+  const arrLength = numArr.length;
+  let minDigit = 0;
+  let mindigitInd = 0;
+
+  for (let i = arrLength - 1; i >= 0; i -= 1) {
+    if (numArr[i] > numArr[i - 1]) {
+      minDigit = numArr[i - 1];
+      mindigitInd = i - 1;
+      break;
+    }
+  }
+  const numArrCoppy = [...numArr];
+  const rightArrDigits = numArrCoppy
+    .splice(mindigitInd + 1)
+    .filter((elem) => elem > minDigit);
+
+  let changeDigitInd = 0;
+  for (let z = arrLength - 1; z >= 0; z -= 1) {
+    if (numArr[z] === Math.min(...rightArrDigits)) {
+      changeDigitInd = z;
+      break;
+    }
+  }
+
+  [numArr[mindigitInd], numArr[changeDigitInd]] = [
+    numArr[changeDigitInd],
+    numArr[mindigitInd],
+  ];
+
+  const rightSortPartArr = numArr.splice(mindigitInd + 1).sort();
+  return +[...numArr, ...rightSortPartArr].join('');
 }
 
 module.exports = {
